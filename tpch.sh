@@ -266,9 +266,22 @@ echo_variables()
 
 check_user
 check_variables
-yum_installs
-repo_init
-script_check
+
+for j in $(curl www.baidu.com 2>&1 | grep "Couldn't resolve host"); do
+	internet_down="1"
+done
+
+if [ "$internet_down" -eq "0" ]; then
+	yum_installs
+	repo_init
+	script_check
+else
+   echo "############################################################################"
+   echo	"Couldn't resolve host,The local code is not checked for the latest version."
+   echo "############################################################################"
+   echo ""
+fi
+
 echo_variables
 
 su --session-command="cd \"$INSTALL_DIR/$REPO\"; ./rollout.sh $GEN_DATA_SCALE $EXPLAIN_ANALYZE $RANDOM_DISTRIBUTION $MULTI_USER_COUNT $RUN_COMPILE_TPCH $RUN_GEN_DATA $RUN_INIT $RUN_DDL $RUN_LOAD $RUN_SQL $RUN_SINGLE_USER_REPORT $RUN_MULTI_USER $RUN_MULTI_USER_REPORT $SINGLE_USER_ITERATIONS" $ADMIN_USER
